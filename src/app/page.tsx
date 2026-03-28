@@ -37,84 +37,30 @@ const workflowSteps = [
   { label: "积累经验", sub: "Reflect", icon: "💎" },
 ];
 
-/* 仙侠风格仙气 — 云雾缭绕上升 */
-function XianQiCloud({ delay, size, side }: { delay: number; size: number; side: "left" | "right" | "center" }) {
-  const xOffset = side === "left" ? -40 : side === "right" ? 40 : 0;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40, x: xOffset }}
-      animate={{
-        opacity: [0, 0.4, 0.6, 0.3, 0],
-        y: [40, 10, -20, -60, -100],
-        x: [xOffset, xOffset + (side === "left" ? -15 : side === "right" ? 15 : 0) * 0.2, xOffset * 0.5],
-        scale: [0.8, 1, 1.3, 1.6],
-      }}
-      transition={{
-        duration: 8 + Math.random() * 4,
-        delay,
-        repeat: Infinity,
-        ease: "easeOut",
-      }}
-      className="absolute rounded-full"
-      style={{
-        width: size,
-        height: size * 0.6,
-        background: "radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 40%, transparent 70%)",
-        filter: "blur(8px)",
-      }}
-    />
-  );
-}
-
-/* 穿道袍的龙虾 + 仙气缭绕 + 向前浮动 — 无边界自然融入 */
+/* 穿道袍的龙虾 — 图片自带仙气，只做浮动 */
 function AscensionLobster() {
   return (
-    <div className="relative flex flex-col items-center justify-center">
-      {/* 底部云雾上升 — 更大范围，自然扩散 */}
-      <XianQiCloud delay={0} size={140} side="center" />
-      <XianQiCloud delay={1.5} size={120} side="left" />
-      <XianQiCloud delay={2.5} size={130} side="right" />
-      <XianQiCloud delay={3.5} size={100} side="center" />
-      <XianQiCloud delay={4.8} size={110} side="left" />
-      <XianQiCloud delay={5.8} size={105} side="right" />
-
-      {/* 身边缭绕的仙气 — 更大更柔和 */}
+    <div className="relative flex items-center justify-center">
       <motion.div
         animate={{
-          opacity: [0.12, 0.25, 0.18],
-          scale: [1, 1.1, 1],
-          y: [0, -10, 0],
-        }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute w-64 h-64 rounded-full pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 65%)",
-          filter: "blur(16px)",
-        }}
-      />
-
-      {/* 龙虾本体 — 向前浮动 */}
-      <motion.div
-        animate={{
-          y: [0, -15, -8, -18, 0],
-          x: [0, 10, 20, 10, 0],
+          y: [0, -12, -6, -14, 0],
+          x: [0, 8, 16, 8, 0],
         }}
         transition={{
-          duration: 4,
+          duration: 4.5,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="relative z-10 w-56 h-56"
+        className="relative z-10"
         style={{
-          filter: "drop-shadow(0 0 30px rgba(255,255,255,0.15)) drop-shadow(0 0 60px rgba(255,255,255,0.08))",
+          filter: "drop-shadow(0 0 20px rgba(255,255,255,0.1))",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/lobster.png"
           alt="龙虾修行者"
-          className="w-full h-full object-contain"
+          className="w-56 h-auto sm:w-64"
         />
       </motion.div>
     </div>
