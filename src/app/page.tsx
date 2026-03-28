@@ -67,30 +67,30 @@ function XianQiCloud({ delay, size, side }: { delay: number; size: number; side:
   );
 }
 
-/* 穿道袍的龙虾 + 仙气缭绕 + 向前浮动 */
+/* 穿道袍的龙虾 + 仙气缭绕 + 向前浮动 — 无边界自然融入 */
 function AscensionLobster() {
   return (
-    <div className="relative flex flex-col items-center justify-center w-56 h-72">
-      {/* 底部云雾上升 */}
-      <XianQiCloud delay={0} size={100} side="center" />
-      <XianQiCloud delay={1.5} size={80} side="left" />
-      <XianQiCloud delay={2.5} size={90} side="right" />
-      <XianQiCloud delay={3.5} size={70} side="center" />
-      <XianQiCloud delay={4.8} size={85} side="left" />
-      <XianQiCloud delay={5.8} size={75} side="right" />
+    <div className="relative flex flex-col items-center justify-center">
+      {/* 底部云雾上升 — 更大范围，自然扩散 */}
+      <XianQiCloud delay={0} size={140} side="center" />
+      <XianQiCloud delay={1.5} size={120} side="left" />
+      <XianQiCloud delay={2.5} size={130} side="right" />
+      <XianQiCloud delay={3.5} size={100} side="center" />
+      <XianQiCloud delay={4.8} size={110} side="left" />
+      <XianQiCloud delay={5.8} size={105} side="right" />
 
-      {/* 身边缭绕的仙气 */}
+      {/* 身边缭绕的仙气 — 更大更柔和 */}
       <motion.div
         animate={{
-          opacity: [0.15, 0.3, 0.2],
-          scale: [1, 1.08, 1],
-          y: [0, -8, 0],
+          opacity: [0.12, 0.25, 0.18],
+          scale: [1, 1.1, 1],
+          y: [0, -10, 0],
         }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute w-48 h-48 rounded-full"
+        className="absolute w-64 h-64 rounded-full pointer-events-none"
         style={{
-          background: "radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%)",
-          filter: "blur(12px)",
+          background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 65%)",
+          filter: "blur(16px)",
         }}
       />
 
@@ -105,9 +105,9 @@ function AscensionLobster() {
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="relative z-10 w-40 h-40"
+        className="relative z-10 w-52 h-52"
         style={{
-          filter: "drop-shadow(0 0 20px rgba(255,255,255,0.15)) drop-shadow(0 0 40px rgba(255,255,255,0.08))",
+          filter: "drop-shadow(0 0 24px rgba(255,255,255,0.12)) drop-shadow(0 0 48px rgba(255,255,255,0.06))",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
