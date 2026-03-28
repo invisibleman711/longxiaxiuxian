@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useEffect, useState, useCallback } from "react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 import { features, siteConfig } from "@/lib/constants";
 
 function AnimatedSection({
@@ -37,246 +37,108 @@ const workflowSteps = [
   { label: "积累经验", sub: "Reflect", icon: "💎" },
 ];
 
-/* Ascending qi particles */
-function QiParticle({ delay, x }: { delay: number; x: number }) {
+/* Qi wisp — orbiting/ascending particle around the lobster */
+function QiWisp({ index }: { index: number }) {
+  const angle = (index / 8) * Math.PI * 2;
+  const radius = 70 + (index % 3) * 15;
+  const duration = 3 + (index % 4) * 0.8;
+  const isGold = index % 2 === 0;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60, x }}
       animate={{
-        opacity: [0, 0.8, 0.6, 0],
-        y: [60, -20, -80, -140],
-        x: [x, x + (Math.random() - 0.5) * 30, x + (Math.random() - 0.5) * 50],
+        x: [
+          Math.cos(angle) * radius,
+          Math.cos(angle + Math.PI * 0.7) * (radius - 10),
+          Math.cos(angle + Math.PI * 1.4) * (radius + 5),
+          Math.cos(angle + Math.PI * 2) * radius,
+        ],
+        y: [
+          Math.sin(angle) * radius * 0.5 - 20,
+          Math.sin(angle + Math.PI * 0.7) * radius * 0.5 - 40,
+          Math.sin(angle + Math.PI * 1.4) * radius * 0.5 - 60,
+          Math.sin(angle + Math.PI * 2) * radius * 0.5 - 20,
+        ],
+        opacity: [0.2, 0.7, 0.5, 0.2],
+        scale: [0.8, 1.2, 1, 0.8],
       }}
       transition={{
-        duration: 3 + Math.random() * 2,
-        delay,
+        duration,
         repeat: Infinity,
-        ease: "easeOut",
+        ease: "easeInOut",
+        delay: index * 0.3,
       }}
-      className="absolute bottom-1/4 left-1/2 w-1 h-1 rounded-full"
+      className="absolute w-2 h-6 rounded-full"
       style={{
-        background:
-          Math.random() > 0.5
-            ? "var(--gold)"
-            : "var(--purple-light)",
-        boxShadow:
-          Math.random() > 0.5
-            ? "0 0 6px var(--gold), 0 0 12px var(--gold)"
-            : "0 0 6px var(--purple-light), 0 0 12px var(--purple-light)",
+        background: isGold
+          ? "linear-gradient(to top, rgba(212,168,83,0.6), rgba(212,168,83,0.1))"
+          : "linear-gradient(to top, rgba(167,139,250,0.5), rgba(167,139,250,0.1))",
+        filter: "blur(1.5px)",
+        boxShadow: isGold
+          ? "0 0 8px rgba(212,168,83,0.3)"
+          : "0 0 8px rgba(167,139,250,0.3)",
       }}
     />
   );
 }
 
-/* Evolution: lobster → immortal, using image assets */
-const EVOLUTION_FORMS = [
-  { id: "lobster", label: "凡虾", src: "/images/lobster.png" },
-  { id: "immortal", label: "飞升", src: "/images/immortal.png" },
-];
-
-/* Ascending lobster with cultivation evolution effect */
+/* Lobster with qi aura surrounding + gentle forward glide */
 function AscensionLobster() {
-  const [phase, setPhase] = useState<"gather" | "ascend" | "burst" | "idle">("gather");
-  const [formIndex, setFormIndex] = useState(0);
-  const [showFlash, setShowFlash] = useState(false);
-
-  const startCycle = useCallback(() => {
-    setPhase("gather");
-    setTimeout(() => setPhase("ascend"), 2000);
-    setTimeout(() => {
-      setPhase("burst");
-      setShowFlash(true);
-      // Evolve on burst
-      setFormIndex((prev) => (prev + 1) % EVOLUTION_FORMS.length);
-      setTimeout(() => setShowFlash(false), 400);
-    }, 3400);
-    setTimeout(() => setPhase("idle"), 5200);
-  }, []);
-
-  useEffect(() => {
-    const t = setTimeout(() => startCycle(), 1500);
-    const interval = setInterval(() => startCycle(), 8000);
-    return () => {
-      clearTimeout(t);
-      clearInterval(interval);
-    };
-  }, [startCycle]);
-
-  const currentForm = EVOLUTION_FORMS[formIndex];
-
   return (
-    <div className="relative flex flex-col items-center justify-center w-44 h-56">
-      {/* Qi particles */}
-      {Array.from({ length: 12 }).map((_, i) => (
-        <QiParticle key={i} delay={i * 0.4 + 0.5} x={(Math.random() - 0.5) * 60} />
+    <div className="relative flex flex-col items-center justify-center w-52 h-64">
+      {/* Orbiting qi wisps */}
+      {Array.from({ length: 8 }).map((_, i) => (
+        <QiWisp key={i} index={i} />
       ))}
 
-      {/* White flash on evolution */}
-      <AnimatePresence>
-        {showFlash && (
-          <motion.div
-            initial={{ opacity: 0.9 }}
-            animate={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="absolute inset-0 z-30 rounded-full"
-            style={{
-              background: "radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%)",
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Spiraling ascending qi wisps on burst */}
-      <AnimatePresence>
-        {phase === "burst" && (
-          <>
-            {/* Wisp 1 — spirals up-left */}
-            <motion.div
-              initial={{ opacity: 0.8, y: 0, x: 0, scale: 1 }}
-              animate={{ opacity: 0, y: -100, x: -30, scale: 0.3 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.6, ease: "easeOut" }}
-              className="absolute w-3 h-8 rounded-full"
-              style={{ background: "linear-gradient(to top, rgba(212,168,83,0.6), transparent)", filter: "blur(2px)" }}
-            />
-            {/* Wisp 2 — spirals up-right */}
-            <motion.div
-              initial={{ opacity: 0.7, y: 0, x: 0, scale: 1 }}
-              animate={{ opacity: 0, y: -110, x: 35, scale: 0.2 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.8, ease: "easeOut", delay: 0.1 }}
-              className="absolute w-2 h-10 rounded-full"
-              style={{ background: "linear-gradient(to top, rgba(167,139,250,0.5), transparent)", filter: "blur(2px)" }}
-            />
-            {/* Wisp 3 — straight up */}
-            <motion.div
-              initial={{ opacity: 0.9, y: 0, x: 0, scale: 1 }}
-              animate={{ opacity: 0, y: -120, x: 5, scale: 0.2 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.4, ease: "easeOut", delay: 0.05 }}
-              className="absolute w-2 h-12 rounded-full"
-              style={{ background: "linear-gradient(to top, rgba(212,168,83,0.7), rgba(167,139,250,0.3), transparent)", filter: "blur(1.5px)" }}
-            />
-            {/* Wisp 4 — left */}
-            <motion.div
-              initial={{ opacity: 0.6, y: 0, x: 0, scale: 1 }}
-              animate={{ opacity: 0, y: -80, x: -45, scale: 0.3 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-              className="absolute w-2 h-6 rounded-full"
-              style={{ background: "linear-gradient(to top, rgba(212,168,83,0.4), transparent)", filter: "blur(2px)" }}
-            />
-            {/* Wisp 5 — right */}
-            <motion.div
-              initial={{ opacity: 0.6, y: 0, x: 0, scale: 1 }}
-              animate={{ opacity: 0, y: -90, x: 40, scale: 0.3 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: "easeOut", delay: 0.15 }}
-              className="absolute w-2 h-6 rounded-full"
-              style={{ background: "linear-gradient(to top, rgba(167,139,250,0.4), transparent)", filter: "blur(2px)" }}
-            />
-            {/* Soft halo expanding gently */}
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0.4 }}
-              animate={{ scale: 1.8, opacity: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              className="absolute w-32 h-32 rounded-full"
-              style={{ background: "radial-gradient(circle, rgba(212,168,83,0.15) 0%, rgba(167,139,250,0.05) 50%, transparent 70%)" }}
-            />
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Gathering glow */}
+      {/* Soft inner glow — pulsing aura */}
       <motion.div
         animate={{
-          opacity: phase === "gather" ? [0, 0.4, 0.6] : phase === "ascend" ? [0.6, 0.8, 0.3] : phase === "burst" ? [0.8, 0] : 0,
-          scale: phase === "gather" ? [0.8, 1, 1.1] : phase === "burst" ? [1.1, 2] : 1,
+          scale: [1, 1.15, 1],
+          opacity: [0.2, 0.35, 0.2],
         }}
-        transition={{ duration: phase === "burst" ? 0.6 : 1.5, ease: "easeInOut" }}
-        className="absolute bottom-12 w-24 h-24 rounded-full"
-        style={{ background: "radial-gradient(circle, rgba(212,168,83,0.25) 0%, rgba(107,63,160,0.1) 50%, transparent 70%)" }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute w-40 h-40 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(212,168,83,0.2) 0%, rgba(107,63,160,0.08) 50%, transparent 70%)",
+        }}
       />
 
-      {/* Outer ring */}
+      {/* Outer breathing ring */}
       <motion.div
         animate={{
-          scale: phase === "burst" ? [1, 1.4, 1] : [1, 1.12, 1],
-          opacity: phase === "burst" ? [0.5, 0.8, 0.3] : [0.3, 0.1, 0.3],
-          borderColor: phase === "burst" ? "rgba(212,168,83,0.6)" : "rgba(212,168,83,0.3)",
+          scale: [1, 1.1, 1],
+          opacity: [0.15, 0.3, 0.15],
         }}
-        transition={{ duration: phase === "burst" ? 0.8 : 4, repeat: phase === "burst" ? 0 : Infinity, ease: "easeInOut" }}
-        className="absolute inset-6 rounded-full border"
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-2 rounded-full border border-gold-dim/30"
       />
 
-      {/* Middle ring */}
+      {/* The lobster — gentle forward glide + float */}
       <motion.div
         animate={{
-          scale: phase === "burst" ? [1, 1.3, 1] : [1, 1.08, 1],
-          opacity: phase === "burst" ? [0.6, 0.9, 0.4] : [0.5, 0.2, 0.5],
-        }}
-        transition={{ duration: phase === "burst" ? 0.6 : 3, repeat: phase === "burst" ? 0 : Infinity, ease: "easeInOut", delay: phase === "burst" ? 0.1 : 0.5 }}
-        className="absolute inset-10 rounded-full border border-purple/40"
-      />
-
-      {/* The evolving creature */}
-      <motion.div
-        key={formIndex}
-        initial={phase === "burst" ? { scale: 0.3, opacity: 0 } : false}
-        animate={{
-          y: phase === "gather" ? [0, -3, 0] : phase === "ascend" ? [0, -28] : phase === "burst" ? [-28, -32, -26, -28] : [-28, -24, -28],
-          scale: phase === "burst" ? [0.3, 1.2, 1] : 1,
-          rotate: phase === "burst" ? [0, -8, 8, 0] : 0,
-          opacity: 1,
+          y: [0, -10, -6, -12, 0],
+          x: [0, 4, 8, 4, 0],
         }}
         transition={{
-          duration: phase === "gather" ? 2 : phase === "ascend" ? 1.4 : phase === "burst" ? 0.6 : 3,
-          repeat: phase === "gather" || phase === "idle" ? Infinity : 0,
-          ease: phase === "ascend" ? [0.16, 1, 0.3, 1] : "easeInOut",
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut",
         }}
-        className="relative z-10 w-28 h-28"
+        className="relative z-10 w-36 h-36"
         style={{
-          filter: phase === "burst"
-            ? "drop-shadow(0 0 20px rgba(212,168,83,0.6)) drop-shadow(0 0 40px rgba(107,63,160,0.4))"
-            : phase === "ascend"
-              ? "drop-shadow(0 0 12px rgba(212,168,83,0.3))"
-              : "none",
+          filter:
+            "drop-shadow(0 0 16px rgba(212,168,83,0.3)) drop-shadow(0 0 32px rgba(107,63,160,0.15))",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={currentForm.src}
-          alt={currentForm.label}
+          src="/images/lobster.png"
+          alt="龙虾修行者"
           className="w-full h-full object-contain"
         />
       </motion.div>
-
-      {/* Light beam during ascend */}
-      <AnimatePresence>
-        {(phase === "ascend" || phase === "burst") && (
-          <motion.div
-            initial={{ opacity: 0, scaleY: 0 }}
-            animate={{ opacity: [0, 0.3, 0.15], scaleY: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px h-full origin-bottom"
-            style={{ background: "linear-gradient(to top, rgba(212,168,83,0.4), rgba(107,63,160,0.2), transparent)" }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Evolution label */}
-      <motion.p
-        key={`label-${formIndex}`}
-        initial={{ opacity: 0, y: 4 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: phase === "burst" ? 0.3 : 0 }}
-        className="absolute -bottom-1 text-xs font-mono tracking-[0.2em] text-gold-dim"
-      >
-        {currentForm.label}
-      </motion.p>
     </div>
   );
 }
