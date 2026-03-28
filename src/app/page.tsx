@@ -37,99 +37,77 @@ const workflowSteps = [
   { label: "积累经验", sub: "Reflect", icon: "💎" },
 ];
 
-/* Qi wisp — orbiting/ascending particle around the lobster */
-function QiWisp({ index }: { index: number }) {
-  const angle = (index / 8) * Math.PI * 2;
-  const radius = 70 + (index % 3) * 15;
-  const duration = 3 + (index % 4) * 0.8;
-  const isGold = index % 2 === 0;
+/* 仙侠风格仙气 — 云雾缭绕上升 */
+function XianQiCloud({ delay, size, side }: { delay: number; size: number; side: "left" | "right" | "center" }) {
+  const xOffset = side === "left" ? -40 : side === "right" ? 40 : 0;
 
   return (
     <motion.div
+      initial={{ opacity: 0, y: 40, x: xOffset }}
       animate={{
-        x: [
-          Math.cos(angle) * radius,
-          Math.cos(angle + Math.PI * 0.7) * (radius - 10),
-          Math.cos(angle + Math.PI * 1.4) * (radius + 5),
-          Math.cos(angle + Math.PI * 2) * radius,
-        ],
-        y: [
-          Math.sin(angle) * radius * 0.5 - 20,
-          Math.sin(angle + Math.PI * 0.7) * radius * 0.5 - 40,
-          Math.sin(angle + Math.PI * 1.4) * radius * 0.5 - 60,
-          Math.sin(angle + Math.PI * 2) * radius * 0.5 - 20,
-        ],
-        opacity: [0.2, 0.7, 0.5, 0.2],
-        scale: [0.8, 1.2, 1, 0.8],
+        opacity: [0, 0.4, 0.6, 0.3, 0],
+        y: [40, 10, -20, -60, -100],
+        x: [xOffset, xOffset + (side === "left" ? -15 : side === "right" ? 15 : 0) * 0.2, xOffset * 0.5],
+        scale: [0.8, 1, 1.3, 1.6],
       }}
       transition={{
-        duration,
+        duration: 8 + Math.random() * 4,
+        delay,
         repeat: Infinity,
-        ease: "easeInOut",
-        delay: index * 0.3,
+        ease: "easeOut",
       }}
-      className="absolute w-2 h-6 rounded-full"
+      className="absolute rounded-full"
       style={{
-        background: isGold
-          ? "linear-gradient(to top, rgba(212,168,83,0.6), rgba(212,168,83,0.1))"
-          : "linear-gradient(to top, rgba(167,139,250,0.5), rgba(167,139,250,0.1))",
-        filter: "blur(1.5px)",
-        boxShadow: isGold
-          ? "0 0 8px rgba(212,168,83,0.3)"
-          : "0 0 8px rgba(167,139,250,0.3)",
+        width: size,
+        height: size * 0.6,
+        background: "radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 40%, transparent 70%)",
+        filter: "blur(8px)",
       }}
     />
   );
 }
 
-/* Lobster with qi aura surrounding + gentle forward glide */
+/* 穿道袍的龙虾 + 仙气缭绕 + 向前浮动 */
 function AscensionLobster() {
   return (
-    <div className="relative flex flex-col items-center justify-center w-52 h-64">
-      {/* Orbiting qi wisps */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <QiWisp key={i} index={i} />
-      ))}
+    <div className="relative flex flex-col items-center justify-center w-56 h-72">
+      {/* 底部云雾上升 */}
+      <XianQiCloud delay={0} size={100} side="center" />
+      <XianQiCloud delay={1.5} size={80} side="left" />
+      <XianQiCloud delay={2.5} size={90} side="right" />
+      <XianQiCloud delay={3.5} size={70} side="center" />
+      <XianQiCloud delay={4.8} size={85} side="left" />
+      <XianQiCloud delay={5.8} size={75} side="right" />
 
-      {/* Soft inner glow — pulsing aura */}
+      {/* 身边缭绕的仙气 */}
       <motion.div
         animate={{
-          scale: [1, 1.15, 1],
-          opacity: [0.2, 0.35, 0.2],
+          opacity: [0.15, 0.3, 0.2],
+          scale: [1, 1.08, 1],
+          y: [0, -8, 0],
         }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute w-40 h-40 rounded-full"
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute w-48 h-48 rounded-full"
         style={{
-          background:
-            "radial-gradient(circle, rgba(212,168,83,0.2) 0%, rgba(107,63,160,0.08) 50%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%)",
+          filter: "blur(12px)",
         }}
       />
 
-      {/* Outer breathing ring */}
+      {/* 龙虾本体 — 向前浮动 */}
       <motion.div
         animate={{
-          scale: [1, 1.1, 1],
-          opacity: [0.15, 0.3, 0.15],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute inset-2 rounded-full border border-gold-dim/30"
-      />
-
-      {/* The lobster — gentle forward glide + float */}
-      <motion.div
-        animate={{
-          y: [0, -10, -6, -12, 0],
-          x: [0, 4, 8, 4, 0],
+          y: [0, -8, -4, -10, 0],
+          x: [0, 6, 12, 6, 0],
         }}
         transition={{
-          duration: 6,
+          duration: 5,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="relative z-10 w-36 h-36"
+        className="relative z-10 w-40 h-40"
         style={{
-          filter:
-            "drop-shadow(0 0 16px rgba(212,168,83,0.3)) drop-shadow(0 0 32px rgba(107,63,160,0.15))",
+          filter: "drop-shadow(0 0 20px rgba(255,255,255,0.15)) drop-shadow(0 0 40px rgba(255,255,255,0.08))",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
