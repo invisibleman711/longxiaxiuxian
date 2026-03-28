@@ -97,17 +97,17 @@ function AscensionLobster() {
       {/* 龙虾本体 — 向前浮动 */}
       <motion.div
         animate={{
-          y: [0, -8, -4, -10, 0],
-          x: [0, 6, 12, 6, 0],
+          y: [0, -15, -8, -18, 0],
+          x: [0, 10, 20, 10, 0],
         }}
         transition={{
-          duration: 5,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="relative z-10 w-52 h-52"
+        className="relative z-10 w-56 h-56"
         style={{
-          filter: "drop-shadow(0 0 24px rgba(255,255,255,0.12)) drop-shadow(0 0 48px rgba(255,255,255,0.06))",
+          filter: "drop-shadow(0 0 30px rgba(255,255,255,0.15)) drop-shadow(0 0 60px rgba(255,255,255,0.08))",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
